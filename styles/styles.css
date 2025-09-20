@@ -1,0 +1,46 @@
+/*
+Hay que revisar esto porque me esta costando colocarle estilos a los radioButton
+*/
+/* #resultGrid {
+    border: 2px solid #333;
+    padding: 50px;
+}
+.texto {
+    color: black;
+    padding: 10px;
+    font-size: 8px;
+} */
+
+.radio-parent1 radio {
+    border-color: #ff0000;
+}
+.radio-parent2 radio {
+    border-color: #0000ff;
+}
+
+.texto {
+    font-size: 10px;
+}
+
+.texto0 {
+    font-size: 20px;
+}
+.texto1 {
+    font-size: 14px;
+}
+.texto2 {
+    font-size: 16px;
+}
+.texto3 {
+    font-size: 14px;
+}
+.texto4 {
+    font-size: 12px;
+}
+.texto5 {
+    font-size: 10px;
+}
+
+.separator {
+    min-width: 4px;
+}
