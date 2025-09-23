@@ -32,13 +32,14 @@ extern int currentPropertiesCount;
 void freeMemory(char** array, int length);
 void freeDoubleMemory(double** array, int length);
 int countDigits(int num);
+void printMatrix(double** dataMatrix);
 void generateGenotypes(property* properties, int amountOfGenes, int amountOfCombinations);
 int calculateArrayElements(char** array, int arrayLength);
 char** calculateChildren(char** firstAlleles, char** secondAlleles);
 char** calculateAlleles(const gchar *currentGenotype);
 char* genotypeToPhenotype(const char* genotype);
 guint ASCIIValue(gconstpointer key);
-double calculateValidValue();
+int calculateValidValue(double** dataMatrix);
 int checkMatrix(double** dataMatrix, int* columnError, int* rowError);
 
 #endif

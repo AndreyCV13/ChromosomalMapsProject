@@ -422,9 +422,122 @@ void generateGenotypes(property* properties, int amountOfGenes, int amountOfComb
     }
 }
 
+double checkNeighbours(double** dataMatrix, int row, int column){
+	double sum = 0;
+	int amountOfResults = amountOfGenes - 2;
+	int currentResults = 0;
 
-double calculateValidValue(){
+	//Ciclo que revisa el primer caso
+	//El gen faltante es el de "arriba izquierda"
+	for(int i = column+1; i < amountOfGenes; i++){
+		double secondItem = dataMatrix[row][i];
+		double thirdItem = dataMatrix[column][i];
+
+		if(secondItem != INPUTERROR && thirdItem != INPUTERROR){
+			sum = secondItem + thirdItem;
+			if (sum > 0.5)
+				return INPUTERROR;
+			return sum;
+		}
+			
+		currentResults++;
+	}
+
+	//Ciclo que revisa el segundo caso
+	//El gen faltante es el de "abajo derecha"
+	for(int i = row - 1; i >= 0; i--){
+		double secondItem = dataMatrix[i][column];
+		double thirdItem = dataMatrix[i][row];
+
+		if(secondItem != INPUTERROR && thirdItem != INPUTERROR){
+			sum = secondItem + thirdItem;
+			if (sum > 0.5)
+				return INPUTERROR;
+			return sum;
+		}
+		currentResults++;
+	}
+
+	//Ciclo que revisa el tercer caso
+	//El gen faltante es el del "centro"
+	int nextIndex = row + 1;
+	while(currentResults < amountOfResults){
+		
+		double secondItem = dataMatrix[nextIndex][column];
+		double thirdItem = dataMatrix[row][nextIndex];
+
+		if(secondItem != INPUTERROR && thirdItem != INPUTERROR){
+			sum = secondItem + thirdItem;
+			if (sum > 0.5)
+				return INPUTERROR;
+			return sum;
+		}
+		nextIndex++;
+	}
+
 	return INPUTERROR;
+}
+
+int countValid(double** dataMatrix){
+	int sum = 0;
+	for (int i = 0; i < amountOfGenes; i++){
+		for (int j = i+1; j < amountOfGenes; j++){
+			if (dataMatrix[i][j] != INPUTERROR)
+				sum++;
+		}
+	}
+	return sum;
+}
+
+
+int nSum(int max){
+	int sum = 0;
+	for (int i = 1; i <= max; i++){
+		sum += i;
+	}
+	return sum;
+}
+
+void printMatrix(double** dataMatrix){
+	for (int row = 0; row < amountOfGenes; row++){
+		for (int column = row+1; column < amountOfGenes; column++){
+			printf("%f ", dataMatrix[row][column]);
+		}
+		printf("\n");
+	}
+}
+
+//Funcion para rellenar un input en caso de que sea posible
+int calculateValidValue(double** dataMatrix){
+	//Condicion para terminar
+	int totalInputs = nSum(amountOfGenes-1);
+	int amountOfValids = countValid(dataMatrix);
+
+	while(amountOfValids < totalInputs){
+		for (int row = 0; row < amountOfGenes; row++){
+			for (int column = row+1; column < amountOfGenes; column++){
+				double currentItem = dataMatrix[row][column];
+
+				//En el caso de que sea un espacio vacio y no valido
+				if (currentItem == INPUTERROR){
+					//Revisa si hay alguna combinacion de vecinos que puedan sumarse
+					double newValue = checkNeighbours(dataMatrix, row, column);
+					printf("newValue: %f\n",newValue);
+					if(newValue != INPUTERROR){
+						dataMatrix[row][column] = newValue;
+					} 
+				}
+			}
+		}
+
+		//Revisar si termina el ciclo
+		int currentValids = countValid(dataMatrix);
+		if(currentValids == amountOfValids)
+			return INPUTERROR;
+
+		amountOfValids = currentValids;
+	}
+	return 0;
 }
 
 double maxValue(double values[3]) {

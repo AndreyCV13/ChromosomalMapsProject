@@ -493,9 +493,8 @@ double getValue(GtkEntry* entry, gboolean fill) {
     const gchar* text = gtk_entry_get_text(entry);
 
 	//En el caso de que un espacio se deje en blanco
-	if (strcmp(text, "") == 0 && fill){
-		double validValue = calculateValidValue();
-		return validValue;
+	if (strcmp(text, "") == 0){
+		return INPUTERROR;
 	}
 
     char* endptr;
@@ -507,6 +506,19 @@ double getValue(GtkEntry* entry, gboolean fill) {
     }
 
     return value;
+}
+
+void fillGridTable(double** dataMatrix){
+    // Escribir las probabilidades de los genes
+    for (int i = 1; i <= amountOfGenes; i++) {
+        for (int j = i+1; j <= amountOfGenes; j++) {
+            GtkEntry *entry = GTK_ENTRY(gtk_grid_get_child_at(grid, j, i));
+
+            char text[16];
+            snprintf(text, sizeof(text), "%.2f", dataMatrix[i-1][j-1]);
+            gtk_entry_set_text(entry, text);
+        }
+    }
 }
 
 void getTableData(gboolean fill){
@@ -525,7 +537,7 @@ void getTableData(gboolean fill){
 			double currentItem = getValue(entry, fill); 
 
 			//Revisamos si la casilla esta vacia y el boton no fue presionado
-			if (currentItem == INPUTERROR){
+			if (currentItem == INPUTERROR && !fill){
 				show_error("Invalid entries, fill in all blank cells or select the option 'Fill'");
 				return;
 			}
@@ -533,6 +545,14 @@ void getTableData(gboolean fill){
 			dataMatrix[row-1][column-1] = currentItem;
 		}
 	}
+
+    //En caso de que se haya marcado la casilla 'fill'
+    if (fill){
+        if(calculateValidValue(dataMatrix) == INPUTERROR){
+            show_error("Couldn't deduce the remaining probabilities");
+            return; 
+        }    
+    }
 
 	//Variables para registrar el error en caso de que sea necesario
 	int columnError;
@@ -544,12 +564,14 @@ void getTableData(gboolean fill){
 		return;
 	}
 
-    printf("Works");
+    fillGridTable(dataMatrix);
+    printMatrix(dataMatrix);
+
 	freeDoubleMemory(dataMatrix, amountOfGenes);
 }
 
 void on_solve_clicked(GtkButton *btn){
-    getTableData(FALSE);
+    getTableData(TRUE);
 }
 
 void leave_program (GtkButton *btn){

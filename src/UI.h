@@ -6,7 +6,7 @@
 // Variables globales UI
 extern GtkWidget *scrollWindow, *percentagesWindow, *scrollWindow1, *resultWindow, *mainWindow, *genesEntry, *genesAmount, *viewPort, *characteristicsWindow;
 extern GtkGrid *grid, *characteristicsGrid, *resultGrid, *percentagesGrid;
-extern GtkBuilder	*builder; 
+extern GtkBuilder *builder; 
 
 void buildGrid(int amountOfCombinations);
 void open_main_window (GtkButton *btn);
