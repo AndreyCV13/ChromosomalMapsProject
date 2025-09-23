@@ -35,6 +35,13 @@ void freeMemory(char** array, int length){
 	free(array);
 }
 
+void freeDoubleMemory(double** array, int length){
+	for (int i = 0; i < length; i++){
+		free(array[i]);
+	}
+	free(array);
+}
+
 //Cuenta los digitos sacando el logaritmo en base 10
 int countDigits(int num) {
     return (int)log10(num) + 1;
@@ -413,4 +420,68 @@ void generateGenotypes(property* properties, int amountOfGenes, int amountOfComb
     for (int i = 0; i < amountOfGenes; i++) {
         freeMemory(propertyCombinations[i], (int)COMBINATIONLENGTH);
     }
+}
+
+
+double calculateValidValue(){
+	return INPUTERROR;
+}
+
+double maxValue(double values[3]) {
+    int selectedIndex = 0;
+	double maxValue = 0.0;
+    for (int i = 0; i < 3; i++) {
+        if (values[i] > maxValue) {
+			maxValue = values[i];
+            selectedIndex = i;
+        }
+    }
+	if (maxValue > 0.5)
+		return INPUTERROR;
+    return selectedIndex;
+}
+
+int checkInputs(double values[3], int selectedIndex){
+	double sum = 0;
+	double maxValue = values[selectedIndex];
+		
+	for (int i = 0; i < 3; i++){
+		if (i != selectedIndex) 
+			sum += values[i];
+	}	
+
+	return (maxValue - MARGINERROR < sum && maxValue + MARGINERROR > sum);
+}
+
+//Revisa que las distancias sean correctas
+int checkMatrix(double** dataMatrix, int* columnError, int* rowError){
+	int lastIndex = amountOfGenes - 2;
+	if (lastIndex <= 0)
+		return 0;
+
+	double check[3];
+
+	for (int row = 0; row < lastIndex; row++){
+		check[0] = dataMatrix[row][row+1];
+		for (int column = row + 2; column < amountOfGenes; column++){
+			check[1] = dataMatrix[row][column];
+			check[2] = dataMatrix[row+1][column];
+			int selectedIndex = maxValue(check);
+			
+			
+			if (selectedIndex == INPUTERROR){
+				*columnError = column;
+				*rowError = row;
+				return INPUTERROR;
+			}
+
+			if(!checkInputs(check, selectedIndex)){
+				*columnError = column;
+				*rowError = row;
+				return INPUTERROR;
+			}
+				
+		}
+	}
+	return 0;
 }

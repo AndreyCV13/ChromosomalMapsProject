@@ -121,14 +121,14 @@ GtkWidget* obtainSelectedRadioButton(GtkWidget *radioButton){
 void on_inserted_char1(GtkEntry *entry, gchar *new_text) {
     const gchar *current_text = gtk_entry_get_text(entry);
 
-    if (!g_ascii_isdigit(new_text[0]) && new_text[0] != '.') {
+    if (!g_ascii_isdigit(new_text[0]) && new_text[0] != ',') {
         g_signal_stop_emission_by_name(entry, "insert-text");
         return;
     }
 
     // Si es un punto, asegurarnos de que no haya ya uno en el texto
-    if (new_text[0] == '.') {
-        if (strchr(current_text, '.') != NULL) {
+    if (new_text[0] == ',') {
+        if (strchr(current_text, ',') != NULL) {
             // Ya hay un punto
             g_signal_stop_emission_by_name(entry, "insert-text");
             return;
@@ -467,7 +467,7 @@ void createGenesInput(int n, int totalDigits) {
     gtk_widget_show_all(GTK_WIDGET(grid));
 }
 
-void accept_genes (GtkButton *btn){
+void accept_genes(GtkButton *btn){
 	gtk_widget_hide(genesEntry);
 
     // Obtener la cantidad de propiedades
@@ -488,98 +488,69 @@ void accept_genes (GtkButton *btn){
 
 }
 
-/*
-void on_char_accept_clicked(GtkButton *btn) {
-    // Obtener las entradas de características
-    GList *children = gtk_container_get_children(GTK_CONTAINER(characteristicsGrid));
-    int n = amountOfGenes;
-    char usedLetters[6] = {0};
-    int valid = 1;
+//Esta funcion convierte el valor de un entry en un double
+double getValue(GtkEntry* entry, gboolean fill) {
+    const gchar* text = gtk_entry_get_text(entry);
 
-	if (currentProperties) {
-        free_properties(currentProperties, currentPropertiesCount);
-		currentProperties = NULL;
-		currentPropertiesCount = 0;
+	//En el caso de que un espacio se deje en blanco
+	if (strcmp(text, "") == 0 && fill){
+		double validValue = calculateValidValue();
+		return validValue;
 	}
 
-	property *properties = malloc(n * sizeof(property));
-	if (!properties) {
-		show_error("Failed to allocate memory for properties.");
+    char* endptr;
+    errno = 0;
+    double value = strtod(text, &endptr);
+
+    if (endptr == text || errno == ERANGE) {
+        return INPUTERROR;
+    }
+
+    return value;
+}
+
+void getTableData(gboolean fill){
+	// Asignación de memoria para la matriz de probabilidades
+    double** dataMatrix = malloc(amountOfGenes * sizeof(double*));
+
+	for(int i = 0; i < amountOfGenes; i++)
+		dataMatrix[i] = malloc(amountOfGenes * sizeof(double));
+
+	int firstCheck = 2;
+	int lastCheck = amountOfGenes - 1;
+
+	for (int row = 1; row <= amountOfGenes; row++){
+		for (int column = row; column <= amountOfGenes; column++) {
+			GtkEntry *entry = GTK_ENTRY(gtk_grid_get_child_at(grid, column, row));
+			double currentItem = getValue(entry, fill); 
+
+			//Revisamos si la casilla esta vacia y el boton no fue presionado
+			if (currentItem == INPUTERROR){
+				show_error("Invalid entries, fill in all blank cells or select the option 'Fill'");
+				return;
+			}
+
+			dataMatrix[row-1][column-1] = currentItem;
+		}
+	}
+
+	//Variables para registrar el error en caso de que sea necesario
+	int columnError;
+	int rowError;
+	if(checkMatrix(dataMatrix, &columnError, &rowError) == INPUTERROR){
+        char errorMsg[100];
+        sprintf(errorMsg, "Cell (%d,%d) is incosistent", rowError, columnError);
+		show_error(errorMsg);
 		return;
 	}
 
-	int assigned = 0;
-    // Conseguir y validar entradas
-    for (int prop = 0; prop < n; prop++) {
-        int baseRow = prop * 3;
-
-        GtkWidget *upperEntry = gtk_grid_get_child_at(GTK_GRID(characteristicsGrid), 0, baseRow + 1);
-        GtkWidget *dominantDesc = gtk_grid_get_child_at(GTK_GRID(characteristicsGrid), 1, baseRow + 1);
-        GtkWidget *lowerEntry = gtk_grid_get_child_at(GTK_GRID(characteristicsGrid), 0, baseRow + 2);
-        GtkWidget *recessiveDesc = gtk_grid_get_child_at(GTK_GRID(characteristicsGrid), 1, baseRow + 2);
-
-        const char *upper = gtk_entry_get_text(GTK_ENTRY(upperEntry));
-        const char *lower = gtk_entry_get_text(GTK_ENTRY(lowerEntry));
-        const char *domDesc = gtk_entry_get_text(GTK_ENTRY(dominantDesc));
-        const char *recDesc = gtk_entry_get_text(GTK_ENTRY(recessiveDesc));
-
-        // 1. Campos obligatorios
-        if (!upper[0] || !lower[0] || !domDesc[0] || !recDesc[0]) {
-            show_error("All fields are required.");
-            valid = 0; break;
-        }
-
-        // 2. Validar letras
-        if (!(upper[0] >= 'A' && upper[0] <= 'Z')) {
-            show_error("Dominant letter must be uppercase (A-Z).");
-            valid = 0; break;
-        }
-        if (!(lower[0] >= 'a' && lower[0] <= 'z')) {
-            show_error("Recessive letter must be lowercase (a-z).");
-            valid = 0; break;
-        }
-        if (upper[0] + 32 != lower[0]) {
-            show_error("Letters must be the same, differing in case (A and a).");
-            valid = 0; break;
-        }
-
-        // 3. No repeticion
-        for (int j = 0; j < prop; j++) {
-            if (usedLetters[j] == upper[0]) {
-                show_error("Characteristic letters may not repeat.");
-                valid = 0; break;
-            }
-        }
-        if (!valid) break;
-        
-        usedLetters[prop] = upper[0];
-        // Asignar valores a la estructura de propiedades
-		properties[prop].upperCase = upper[0];
-		properties[prop].lowerCase = lower[0];
-		properties[prop].dominant = strdup(domDesc);
-		properties[prop].recessive = strdup(recDesc);
-		assigned++;
-	}
-
-    if (!valid) {
-        if (properties) {
-            free_properties(properties, assigned);
-        }
-        return;
-    }
-
-    // Variables globales
-	currentProperties = properties;
-	currentPropertiesCount = n;
-
-    // Generar genotipos y construir el grid
-    int amountOfCombinations = pow(COMBINATIONLENGTH, (double)n);
-    generateGenotypes(properties, n, amountOfCombinations);
-    buildGrid(amountOfCombinations);
-
-    gtk_widget_hide(characteristicsWindow);
+    printf("Works");
+	freeDoubleMemory(dataMatrix, amountOfGenes);
 }
-*/
+
+void on_solve_clicked(GtkButton *btn){
+    getTableData(FALSE);
+}
 
 void leave_program (GtkButton *btn){
     gtk_widget_destroy(mainWindow);

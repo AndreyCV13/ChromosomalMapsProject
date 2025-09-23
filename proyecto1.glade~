@@ -564,7 +564,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="propertyAmount">
+          <object class="GtkEntry" id="genesAmount">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="margin-start">10</property>
