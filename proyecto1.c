@@ -18,7 +18,9 @@ Interfaz Grafica Principal
 #include "src/logic.h"
 
 //Variables globales de GTK
-GtkWidget *mainWindow, *genesEntry, *genesAmount, *viewPort, *errorDialog, *characteristicsWindow, *scrollWindow, *resultWindow, *percentagesWindow, *scrollWindow1;
+GtkWidget *mainWindow, *genesEntry, *genesAmount, *viewPort, 
+*errorDialog, *characteristicsWindow, *scrollWindow, *resultWindow, 
+*percentagesWindow, *scrollWindow1, *fillBox;
 GtkGrid *grid, *characteristicsGrid, *resultGrid, *percentagesGrid;
 GtkBuilder	*builder; 
 
@@ -43,6 +45,7 @@ void buildComponents(){
 	mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "mainWindow"));
 	genesEntry = GTK_WIDGET(gtk_builder_get_object(builder, "propertyEntry"));
 	genesAmount = GTK_WIDGET(gtk_builder_get_object(builder, "genesAmount"));
+	fillBox = GTK_WIDGET(gtk_builder_get_object(builder, "fillBox"));
 	characteristicsWindow = GTK_WIDGET(gtk_builder_get_object(builder, "characteristicsWindow"));
 	characteristicsGrid = GTK_GRID(gtk_builder_get_object(builder, "characteristicsGrid"));
 	viewPort = GTK_WIDGET(gtk_builder_get_object(builder, "view"));

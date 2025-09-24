@@ -4,7 +4,9 @@
 #include "logic.h"
 
 // Variables globales UI
-extern GtkWidget *scrollWindow, *percentagesWindow, *scrollWindow1, *resultWindow, *mainWindow, *genesEntry, *genesAmount, *viewPort, *characteristicsWindow;
+extern GtkWidget *scrollWindow, *percentagesWindow, *scrollWindow1, 
+*resultWindow, *mainWindow, *genesEntry, *genesAmount, *viewPort, 
+*characteristicsWindow, *fillBox;
 extern GtkGrid *grid, *characteristicsGrid, *resultGrid, *percentagesGrid;
 extern GtkBuilder *builder; 
 

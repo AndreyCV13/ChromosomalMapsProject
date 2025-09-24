@@ -565,13 +565,14 @@ void getTableData(gboolean fill){
 	}
 
     fillGridTable(dataMatrix);
-    printMatrix(dataMatrix);
+    //printMatrix(dataMatrix);
 
 	freeDoubleMemory(dataMatrix, amountOfGenes);
 }
 
 void on_solve_clicked(GtkButton *btn){
-    getTableData(TRUE);
+    gboolean fillFlag = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox));
+    getTableData(fillFlag);
 }
 
 void leave_program (GtkButton *btn){
