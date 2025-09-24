@@ -427,6 +427,8 @@ double recombinationToCM(double r) {
         return INPUTERROR;
     }
 
+	if (r >= 0.5) r = 0.4999;
+
     return -50.0 * log(1.0 - 2.0 * r);
 }
 
@@ -613,14 +615,14 @@ int checkInputs(double values[3], int selectedIndex){
 	double sum = 0;
 	double maxValue = recombinationToCM(values[selectedIndex]);
 
-	if (maxValue == INPUTERROR)
-		return 0;
-		
 	for (int i = 0; i < 3; i++){
 		if (i != selectedIndex){
 			sum += recombinationToCM(values[i]);
 		}
 	}	
+
+	if (sum >= recombinationToCM(0.5))
+		return TRUE;
 
 	return (maxValue - MARGINERROR < sum && maxValue + MARGINERROR > sum);
 }

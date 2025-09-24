@@ -528,7 +528,7 @@ void getTableData(gboolean fill){
     double** dataMatrix = malloc(amountOfGenes * sizeof(double*));
 
 	for(int i = 0; i < amountOfGenes; i++)
-		dataMatrix[i] = malloc(amountOfGenes * sizeof(double));
+		dataMatrix[i] = calloc(amountOfGenes, sizeof(double));
 
 	int firstCheck = 2;
 	int lastCheck = amountOfGenes - 1;
@@ -552,6 +552,7 @@ void getTableData(gboolean fill){
 		}
 	}
 
+    //printMatrix(dataMatrix);
     //En caso de que se haya marcado la casilla 'fill'
     if (fill){
         if(calculateValidValue(dataMatrix, TRUE) == INPUTERROR){
@@ -562,6 +563,7 @@ void getTableData(gboolean fill){
         }    
     }
 
+    //printMatrix(dataMatrix);
 	//Variables para registrar el error en caso de que sea necesario
 	int columnError;
 	int rowError;
