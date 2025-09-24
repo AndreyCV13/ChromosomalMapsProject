@@ -318,7 +318,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">TBA</property>
+                <property name="tooltip-text" translatable="yes">Option that generates the chromosomal map</property>
                 <property name="margin-start">15</property>
                 <property name="margin-end">15</property>
                 <property name="margin-top">10</property>
@@ -337,7 +337,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">TBA</property>
+                <property name="tooltip-text" translatable="yes">Button that exits the program</property>
                 <property name="margin-start">15</property>
                 <property name="margin-end">15</property>
                 <property name="margin-top">10</property>
