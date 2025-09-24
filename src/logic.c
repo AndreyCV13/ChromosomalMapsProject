@@ -438,7 +438,7 @@ double cmToRecombination(double d) {
     return 0.5 * (1.0 - exp(-2.0 * d / 100.0));
 }
 
-double checkNeighbours(double** dataMatrix, int row, int column){
+double checkNeighbours(double** dataMatrix, int row, int column, int sumFlag){
 	double sum = 0;
 	int amountOfResults = amountOfGenes - 2;
 	int currentResults = 0;
@@ -456,7 +456,11 @@ double checkNeighbours(double** dataMatrix, int row, int column){
 			if (cmSecond == INPUTERROR || cmThird == INPUTERROR)
 				return INPUTERROR;
 
-			sum = cmSecond + cmThird;
+			if (sumFlag)
+				sum = cmSecond + cmThird;
+			else
+				sum = fabs(cmSecond - cmThird);
+
 			sum = cmToRecombination(sum);
 
 			if (sum > 0.5)
@@ -480,7 +484,11 @@ double checkNeighbours(double** dataMatrix, int row, int column){
 			if (cmSecond == INPUTERROR || cmThird == INPUTERROR)
 				return INPUTERROR;
 
-			sum = cmSecond + cmThird;
+			if (sumFlag)
+				sum = cmSecond + cmThird;
+			else
+				sum = fabs(cmSecond - cmThird);
+
 			sum = cmToRecombination(sum);
 
 			if (sum > 0.5)
@@ -505,12 +513,18 @@ double checkNeighbours(double** dataMatrix, int row, int column){
 			if (cmSecond == INPUTERROR || cmThird == INPUTERROR)
 				return INPUTERROR;
 
-			sum = cmSecond + cmThird;
+			if (sumFlag)
+				sum = cmSecond + cmThird;
+			else
+				sum = fabs(cmSecond - cmThird);
+
 			sum = cmToRecombination(sum);
 
 			if (sum > 0.5)
 				return INPUTERROR;
 			return sum;
+		} else{
+			return INPUTERROR;
 		}
 		nextIndex++;
 	}
@@ -548,7 +562,7 @@ void printMatrix(double** dataMatrix){
 }
 
 //Funcion para rellenar un input en caso de que sea posible
-int calculateValidValue(double** dataMatrix){
+int calculateValidValue(double** dataMatrix, int sumFlag){
 	//Condicion para terminar
 	int totalInputs = nSum(amountOfGenes-1);
 	int amountOfValids = countValid(dataMatrix);
@@ -557,12 +571,11 @@ int calculateValidValue(double** dataMatrix){
 		for (int row = 0; row < amountOfGenes; row++){
 			for (int column = row+1; column < amountOfGenes; column++){
 				double currentItem = dataMatrix[row][column];
-
 				//En el caso de que sea un espacio vacio y no valido
 				if (currentItem == INPUTERROR){
 					//Revisa si hay alguna combinacion de vecinos que puedan sumarse
-					double newValue = checkNeighbours(dataMatrix, row, column);
-					printf("newValue: %f\n",newValue);
+					double newValue = checkNeighbours(dataMatrix, row, column, sumFlag);
+					//printf("newValue: %f\n",newValue);
 					if(newValue != INPUTERROR){
 						dataMatrix[row][column] = newValue;
 					} 

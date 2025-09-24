@@ -505,6 +505,8 @@ double getValue(GtkEntry* entry, gboolean fill) {
         return INPUTERROR;
     }
 
+    if (value > 0.5)
+        return OUTOFBOUNDS;
     return value;
 }
 
@@ -536,6 +538,10 @@ void getTableData(gboolean fill){
 			GtkEntry *entry = GTK_ENTRY(gtk_grid_get_child_at(grid, column, row));
 			double currentItem = getValue(entry, fill); 
 
+            if(currentItem == OUTOFBOUNDS){
+                show_error("Probabilities cannot be higher than 0,5");
+				return;
+            }
 			//Revisamos si la casilla esta vacia y el boton no fue presionado
 			if (currentItem == INPUTERROR && !fill){
 				show_error("Invalid entries, fill in all blank cells or select the option 'Fill'");
@@ -548,9 +554,11 @@ void getTableData(gboolean fill){
 
     //En caso de que se haya marcado la casilla 'fill'
     if (fill){
-        if(calculateValidValue(dataMatrix) == INPUTERROR){
-            show_error("Couldn't deduce the remaining probabilities");
-            return; 
+        if(calculateValidValue(dataMatrix, TRUE) == INPUTERROR){
+            if(calculateValidValue(dataMatrix, FALSE) == INPUTERROR){
+                show_error("Couldn't deduce the remaining probabilities");
+                return; 
+            }    
         }    
     }
 

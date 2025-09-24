@@ -4,6 +4,7 @@
 #include <math.h>
 
 #define INPUTERROR -1
+#define OUTOFBOUNDS -2
 #define MARGINERROR 2
 #define True 1
 #define False 0
@@ -39,7 +40,7 @@ char** calculateChildren(char** firstAlleles, char** secondAlleles);
 char** calculateAlleles(const gchar *currentGenotype);
 char* genotypeToPhenotype(const char* genotype);
 guint ASCIIValue(gconstpointer key);
-int calculateValidValue(double** dataMatrix);
+int calculateValidValue(double** dataMatrix, int sumFlag);
 int checkMatrix(double** dataMatrix, int* columnError, int* rowError);
 
 #endif
