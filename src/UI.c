@@ -515,7 +515,7 @@ void fillGridTable(double** dataMatrix){
             GtkEntry *entry = GTK_ENTRY(gtk_grid_get_child_at(grid, j, i));
 
             char text[16];
-            snprintf(text, sizeof(text), "%.2f", dataMatrix[i-1][j-1]);
+            snprintf(text, sizeof(text), "%.3f", dataMatrix[i-1][j-1]);
             gtk_entry_set_text(entry, text);
         }
     }

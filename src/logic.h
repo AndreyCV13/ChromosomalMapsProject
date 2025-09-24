@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define INPUTERROR -1
-#define MARGINERROR 0.02
+#define MARGINERROR 2
 #define True 1
 #define False 0
 #define PROPERTYLENGTH 2.0

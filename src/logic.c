@@ -422,6 +422,24 @@ void generateGenotypes(property* properties, int amountOfGenes, int amountOfComb
     }
 }
 
+double recombinationToCM(double r) {
+    if (r < 0 || r > 0.5) {
+        fprintf(stderr, "Error: la probabilidad de recombinación debe estar entre 0 y 0.5.\n");
+        return -1;
+    }
+
+    return -50.0 * log(1.0 - 2.0 * r);
+}
+
+double cmToRecombination(double d) {
+    if (d < 0) {
+        fprintf(stderr, "Error: la distancia genética no puede ser negativa.\n");
+        return -1;
+    }
+
+    return 0.5 * (1.0 - exp(-2.0 * d / 100.0));
+}
+
 double checkNeighbours(double** dataMatrix, int row, int column){
 	double sum = 0;
 	int amountOfResults = amountOfGenes - 2;
@@ -434,7 +452,11 @@ double checkNeighbours(double** dataMatrix, int row, int column){
 		double thirdItem = dataMatrix[column][i];
 
 		if(secondItem != INPUTERROR && thirdItem != INPUTERROR){
-			sum = secondItem + thirdItem;
+			double cmSecond = recombinationToCM(secondItem);
+			double cmThird = recombinationToCM(thirdItem);
+			sum = cmSecond + cmThird;
+			sum = cmToRecombination(sum);
+
 			if (sum > 0.5)
 				return INPUTERROR;
 			return sum;
@@ -450,7 +472,11 @@ double checkNeighbours(double** dataMatrix, int row, int column){
 		double thirdItem = dataMatrix[i][row];
 
 		if(secondItem != INPUTERROR && thirdItem != INPUTERROR){
-			sum = secondItem + thirdItem;
+			double cmSecond = recombinationToCM(secondItem);
+			double cmThird = recombinationToCM(thirdItem);
+			sum = cmSecond + cmThird;
+			sum = cmToRecombination(sum);
+
 			if (sum > 0.5)
 				return INPUTERROR;
 			return sum;
@@ -467,7 +493,11 @@ double checkNeighbours(double** dataMatrix, int row, int column){
 		double thirdItem = dataMatrix[row][nextIndex];
 
 		if(secondItem != INPUTERROR && thirdItem != INPUTERROR){
-			sum = secondItem + thirdItem;
+			double cmSecond = recombinationToCM(secondItem);
+			double cmThird = recombinationToCM(thirdItem);
+			sum = cmSecond + cmThird;
+			sum = cmToRecombination(sum);
+
 			if (sum > 0.5)
 				return INPUTERROR;
 			return sum;
@@ -556,11 +586,11 @@ double maxValue(double values[3]) {
 
 int checkInputs(double values[3], int selectedIndex){
 	double sum = 0;
-	double maxValue = values[selectedIndex];
+	double maxValue = recombinationToCM(values[selectedIndex]);
 		
 	for (int i = 0; i < 3; i++){
 		if (i != selectedIndex) 
-			sum += values[i];
+			sum += recombinationToCM(values[i]);
 	}	
 
 	return (maxValue - MARGINERROR < sum && maxValue + MARGINERROR > sum);
